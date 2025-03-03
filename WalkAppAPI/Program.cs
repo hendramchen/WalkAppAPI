@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WalkAppAPI.Data;
+using WalkAppAPI.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,6 +14,7 @@ builder.Services.AddDbContext<WalksDbContext>(options => options.UseMySql(
         new MySqlServerVersion(new Version(8, 0, 2))
     )
 );
+builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 
 var app = builder.Build();
 

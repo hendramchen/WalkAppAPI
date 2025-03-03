@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using WalkAppAPI.Data;
 using WalkAppAPI.Models.Domain;
 using WalkAppAPI.Models.DTO;
+using WalkAppAPI.Repositories;
 
 namespace WalkAppAPI.Controllers;
 
@@ -11,21 +11,24 @@ namespace WalkAppAPI.Controllers;
 public class RegionsController: ControllerBase
 {
     private readonly WalksDbContext _context;
+    private readonly IRegionRepository _regionRepository;
     
-    public RegionsController(WalksDbContext context)
+    public RegionsController(WalksDbContext context, IRegionRepository regionRepository)
     {
         _context = context;
+        _regionRepository = regionRepository;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<RegionDto>>> GetRegions()
     {
-        var regions = await _context.Regions.ToListAsync();
+        // var regions = await _context.Regions.ToListAsync();
+        var regions = await _regionRepository.GetAllRegions();
         // map domain models to DTOs
-        var regionDTOs = new List<RegionDto>();
+        var regionDtos = new List<RegionDto>();
         foreach (var region in regions)
         {
-            regionDTOs.Add(new RegionDto()
+            regionDtos.Add(new RegionDto()
             {
                 Id = region.Id,
                 Name = region.Name,
@@ -33,7 +36,7 @@ public class RegionsController: ControllerBase
                 RegionImageUrl = region.RegionImageUrl,
             });
         }
-        return Ok(regionDTOs);
+        return Ok(regionDtos);
     }
     //public async Task<ActionResult<IEnumerable<Region>>> GetRegions()
     //{
@@ -43,7 +46,7 @@ public class RegionsController: ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<RegionDto>> GetRegion(Guid id)
     {
-        Region region = await _context.Regions.FindAsync(id);
+        var region = await _regionRepository.GetRegionById(id);
 
         if (region == null)
         {
@@ -72,8 +75,7 @@ public class RegionsController: ControllerBase
         };
         
         // use domain model to create region
-        _context.Regions.Add(regionDomainModel);
-        await _context.SaveChangesAsync();
+        regionDomainModel = await _regionRepository.CreateRegion(regionDomainModel);
         
         // map domain model back to DTO
         RegionDto regionDto = new RegionDto()
@@ -90,7 +92,7 @@ public class RegionsController: ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<RegionDto>> PutRegion(Guid id, UpdateRegionRequestDto updateRegionRequestDto)
     {
-        Region region = await _context.Regions.FindAsync(id);
+        var region = await _context.Regions.FindAsync(id);
         if (region == null)
         {
             return NotFound();
