@@ -42,11 +42,12 @@ public class RegionRepository: IRegionRepository
         return regionToUpdate;
     }
 
-    public async Task DeleteRegion(Guid id)
+    public async Task<bool> DeleteRegion(Guid id)
     {
         var regionToDelete = await _context.Regions.FindAsync(id);
-        if (regionToDelete == null) return;
+        if (regionToDelete == null) return false;
         _context.Regions.Remove(regionToDelete);
         await _context.SaveChangesAsync();
+        return true;
     }
 }
