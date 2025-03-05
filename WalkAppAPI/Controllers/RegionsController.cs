@@ -47,6 +47,7 @@ public class RegionsController: ControllerBase
     [HttpPost]
     public async Task<ActionResult<RegionDto>> PostRegion(AddRegionRequestDto addRegionRequestDto)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         // map or convert DTO to domain model
         var regionDomainModel = _mapper.Map<Region>(addRegionRequestDto);
         
@@ -62,6 +63,7 @@ public class RegionsController: ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<RegionDto>> PutRegion(Guid id, UpdateRegionRequestDto updateRegionRequestDto)
     {
+        if (!ModelState.IsValid) return BadRequest(ModelState);
         // map DTO to domain model
         var region = _mapper.Map<Region>(updateRegionRequestDto);
         region = await _regionRepository.UpdateRegion(id, region);

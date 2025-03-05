@@ -16,6 +16,7 @@ builder.Services.AddDbContext<WalksDbContext>(options => options.UseMySql(
     )
 );
 builder.Services.AddScoped<IRegionRepository, RegionRepository>();
+builder.Services.AddScoped<IWalkRepository, WalkRepository>();
 builder.Services.AddAutoMapper(typeof(AutoMapperProfiles));
 
 var app = builder.Build();
