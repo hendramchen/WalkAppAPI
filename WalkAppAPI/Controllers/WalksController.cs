@@ -21,9 +21,16 @@ public class WalksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerator<WalkDto>>> GetAll()
+    public async Task<ActionResult<IEnumerator<WalkDto>>> GetAll(
+        [FromQuery] string? filterOn, 
+        [FromQuery] string? filterQuery, 
+        [FromQuery] string? sortBy, 
+        [FromQuery] bool? isAsc,
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 1000
+        )
     {
-        var wakls = await _repository.GetAllAsync();
+        var wakls = await _repository.GetAllAsync(filterOn, filterQuery, sortBy, isAsc ?? true, pageNumber, pageSize);
         return Ok(_mapper.Map<IEnumerable<WalkDto>>(wakls));
     }
 
